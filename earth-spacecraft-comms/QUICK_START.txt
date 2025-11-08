@@ -1,0 +1,148 @@
+╔═══════════════════════════════════════════════════════════════════╗
+║   🌍 GUIDE RAPIDE - Système Communication Terre ↔ Vaisseau 🛸    ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+📍 ÉTAPE 1: ALLER DANS LE DOSSIER
+──────────────────────────────────
+cd c:\Users\bnali\Downloads\ieeetsyp\GalactiMecha-1\earth-spacecraft-comms
+
+📦 ÉTAPE 2: INSTALLER LES DÉPENDANCES
+──────────────────────────────────────
+npm install
+
+🚀 ÉTAPE 3: DÉMARRER LE SERVEUR
+────────────────────────────────
+npm start
+
+✅ Le serveur démarre sur: http://localhost:3000
+
+
+╔═══════════════════════════════════════════════════════════════════╗
+║                     🧪 TESTER LE SYSTÈME                          ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+🎯 OPTION 1: Scripts automatiques (Recommandé!)
+────────────────────────────────────────────────
+
+📝 Avec Git Bash:
+   bash quick-test.sh
+
+💻 Avec PowerShell:
+   .\quick-test.ps1
+
+🟢 Avec Node.js:
+   node test-communication.js
+
+
+🎯 OPTION 2: Tests manuels avec curl
+─────────────────────────────────────
+
+🔐 Test 1: Chiffrer un message
+────────────────────────────────
+curl -X POST http://localhost:3000/api/encryption/encrypt \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer earth-token-123" \
+  -d '{"message": "Houston, nous avons un problème!"}'
+
+
+📡 Test 2: Envoyer un message
+──────────────────────────────
+curl -X POST http://localhost:3000/api/messages/send \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer earth-token-123" \
+  -d '{
+    "from": "Earth",
+    "to": "Spacecraft",
+    "message": "Préparez-vous pour l'\''amarrage",
+    "priority": "high"
+  }'
+
+
+📬 Test 3: Recevoir les messages
+─────────────────────────────────
+curl -X GET http://localhost:3000/api/messages/receive/Spacecraft \
+  -H "Authorization: Bearer spacecraft-token-456"
+
+
+🛰️  Test 4: Envoyer la télémétrie
+──────────────────────────────────
+curl -X POST http://localhost:3000/api/telemetry \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer spacecraft-token-456" \
+  -d '{
+    "spacecraft_id": "MARS-001",
+    "position": {"x": 150000, "y": 200000, "z": 50000},
+    "velocity": {"x": 2500, "y": 1800, "z": 300},
+    "fuel_level": 75.5,
+    "status": "operational"
+  }'
+
+
+╔═══════════════════════════════════════════════════════════════════╗
+║                  🔑 TOKENS D'AUTHENTIFICATION                     ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+🌍 Terre (Earth):
+   Authorization: Bearer earth-token-123
+
+🛸 Vaisseau (Spacecraft):
+   Authorization: Bearer spacecraft-token-456
+
+
+╔═══════════════════════════════════════════════════════════════════╗
+║                    📡 ENDPOINTS DISPONIBLES                       ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+POST   /api/encryption/encrypt        🔐 Chiffrer un message
+POST   /api/encryption/decrypt        🔓 Déchiffrer un message
+POST   /api/messages/send             📤 Envoyer un message
+GET    /api/messages/receive/:id      📥 Recevoir les messages
+POST   /api/telemetry                 🛰️  Envoyer télémétrie
+GET    /api/telemetry/:spacecraftId   📊 Récupérer télémétrie
+
+
+╔═══════════════════════════════════════════════════════════════════╗
+║                    📚 DOCUMENTATION COMPLÈTE                      ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+📖 Guide de test détaillé:
+   - Voir: TEST_GUIDE.md
+
+📂 Documentation projet:
+   - Voir: README.md
+
+
+╔═══════════════════════════════════════════════════════════════════╗
+║                         🐛 DÉPANNAGE                              ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+❌ Le serveur ne démarre pas?
+   → Vérifier si le port 3000 est libre:
+     netstat -ano | findstr :3000
+
+❌ Erreur "npm n'est pas reconnu"?
+   → Installer Node.js: https://nodejs.org/
+
+❌ Erreur d'authentification?
+   → Vérifier le format: "Authorization: Bearer votre-token"
+   → Utiliser le bon token (Earth vs Spacecraft)
+
+❌ Scripts PowerShell bloqués?
+   → Exécuter: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+
+
+╔═══════════════════════════════════════════════════════════════════╗
+║                    🎯 RÉSUMÉ EN 3 COMMANDES                       ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+1️⃣  cd earth-spacecraft-comms
+2️⃣  npm install
+3️⃣  npm start
+
+Puis dans un autre terminal:
+4️⃣  bash quick-test.sh   (ou .\quick-test.ps1)
+
+
+══════════════════════════════════════════════════════════════════════
+                🚀 Bon voyage dans l'espace! 🌌
+══════════════════════════════════════════════════════════════════════
