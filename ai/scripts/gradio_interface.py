@@ -150,47 +150,84 @@ def calculate_time_to_destination(current_pos, current_velocity, fuel_level, thr
         return None
 
 def create_sensor_plot(results):
-    """Create sensor data timeline plot."""
+    """Create sensor data histogram plots with Interstellar theme."""
     steps = results['steps']
     sensor_data = np.array(results['sensor_data'])
+    
+    # Interstellar dark theme colors
+    bg_color = '#0a0e27'
+    text_color = '#e8f4f8'
+    cyan_color = '#64b5f6'
+    bar_colors = ['#2196f3', '#00bcd4', '#4caf50', '#ffc107', '#ff9800', '#f44336']
 
-    fig, axes = plt.subplots(2, 3, figsize=(15, 8))
-    fig.suptitle('Sensor Data Timeline')
+    fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+    fig.patch.set_facecolor(bg_color)
+    fig.suptitle('Sensor Data Distribution', color=text_color, fontsize=16, fontweight='bold', y=0.995)
 
-    # Position
-    axes[0,0].plot(steps, sensor_data[:, 0], label='X Position')
-    axes[0,0].plot(steps, sensor_data[:, 1], label='Y Position')
-    axes[0,0].plot(steps, sensor_data[:, 2], label='Z Position')
-    axes[0,0].set_title('Position (km)')
-    axes[0,0].legend()
+    # Configure all axes with dark theme
+    for ax_row in axes:
+        for ax in ax_row:
+            ax.set_facecolor(bg_color)
+            ax.spines['bottom'].set_color(cyan_color)
+            ax.spines['top'].set_color(cyan_color)
+            ax.spines['left'].set_color(cyan_color)
+            ax.spines['right'].set_color(cyan_color)
+            ax.tick_params(colors=text_color, labelsize=9)
+            ax.grid(True, alpha=0.2, color=cyan_color, linestyle='--', linewidth=0.5)
 
-    # Velocity
-    axes[0,1].plot(steps, sensor_data[:, 3], label='VX')
-    axes[0,1].plot(steps, sensor_data[:, 4], label='VY')
-    axes[0,1].plot(steps, sensor_data[:, 5], label='VZ')
-    axes[0,1].set_title('Velocity (km/s)')
-    axes[0,1].legend()
+    # Position Histograms (X, Y, Z)
+    ax = axes[0, 0]
+    ax.hist([sensor_data[:, 0], sensor_data[:, 1], sensor_data[:, 2]], 
+            bins=20, label=['X', 'Y', 'Z'], color=bar_colors[:3], alpha=0.7, edgecolor=cyan_color)
+    ax.set_title('Position Distribution (km)', color=text_color, fontsize=12, pad=10)
+    ax.set_xlabel('Position (km)', color=text_color, fontsize=10)
+    ax.set_ylabel('Frequency', color=text_color, fontsize=10)
+    ax.legend(facecolor=bg_color, edgecolor=cyan_color, labelcolor=text_color, framealpha=0.9)
 
-    # Attitude
-    axes[0,2].plot(steps, sensor_data[:, 6], label='Roll')
-    axes[0,2].plot(steps, sensor_data[:, 7], label='Pitch')
-    axes[0,2].plot(steps, sensor_data[:, 8], label='Yaw')
-    axes[0,2].set_title('Attitude (degrees)')
-    axes[0,2].legend()
+    # Velocity Histograms (VX, VY, VZ)
+    ax = axes[0, 1]
+    ax.hist([sensor_data[:, 3], sensor_data[:, 4], sensor_data[:, 5]], 
+            bins=20, label=['VX', 'VY', 'VZ'], color=bar_colors[:3], alpha=0.7, edgecolor=cyan_color)
+    ax.set_title('Velocity Distribution (km/s)', color=text_color, fontsize=12, pad=10)
+    ax.set_xlabel('Velocity (km/s)', color=text_color, fontsize=10)
+    ax.set_ylabel('Frequency', color=text_color, fontsize=10)
+    ax.legend(facecolor=bg_color, edgecolor=cyan_color, labelcolor=text_color, framealpha=0.9)
 
-    # Fuel and Distance
-    axes[1,0].plot(steps, results['fuel_levels'], color='orange')
-    axes[1,0].set_title('Fuel Level (%)')
-    axes[1,0].set_ylim(0, 100)
+    # Attitude Histograms (Roll, Pitch, Yaw)
+    ax = axes[0, 2]
+    ax.hist([sensor_data[:, 6], sensor_data[:, 7], sensor_data[:, 8]], 
+            bins=20, label=['Roll', 'Pitch', 'Yaw'], color=bar_colors[3:6], alpha=0.7, edgecolor=cyan_color)
+    ax.set_title('Attitude Distribution (degrees)', color=text_color, fontsize=12, pad=10)
+    ax.set_xlabel('Degrees', color=text_color, fontsize=10)
+    ax.set_ylabel('Frequency', color=text_color, fontsize=10)
+    ax.legend(facecolor=bg_color, edgecolor=cyan_color, labelcolor=text_color, framealpha=0.9)
 
-    axes[1,1].plot(steps, results['distances'], color='red')
-    axes[1,1].set_title('Distance to Mars (km)')
+    # Fuel Level Histogram
+    ax = axes[1, 0]
+    ax.hist(results['fuel_levels'], bins=15, color='#ffa500', alpha=0.7, edgecolor=cyan_color)
+    ax.set_title('Fuel Level Distribution (%)', color=text_color, fontsize=12, pad=10)
+    ax.set_xlabel('Fuel (%)', color=text_color, fontsize=10)
+    ax.set_ylabel('Frequency', color=text_color, fontsize=10)
 
-    # Time estimates
-    time_estimates = [t if t is not None and t != float('inf') else 0 for t in results['time_estimates']]
-    axes[1,2].plot(steps, time_estimates, color='purple')
-    axes[1,2].set_title('Time to Destination (hours)')
-    axes[1,2].set_ylabel('Estimated Hours')
+    # Distance Histogram
+    ax = axes[1, 1]
+    ax.hist(results['distances'], bins=15, color='#ff4444', alpha=0.7, edgecolor=cyan_color)
+    ax.set_title('Distance to Mars Distribution (km)', color=text_color, fontsize=12, pad=10)
+    ax.set_xlabel('Distance (km)', color=text_color, fontsize=10)
+    ax.set_ylabel('Frequency', color=text_color, fontsize=10)
+
+    # Anomaly Detection Distribution
+    ax = axes[1, 2]
+    anomaly_counts = [results['anomalies'].count(False), results['anomalies'].count(True)]
+    ax.bar(['Normal', 'Anomaly'], anomaly_counts, color=['#4caf50', '#ff4444'], 
+           alpha=0.7, edgecolor=cyan_color, width=0.6)
+    ax.set_title('Anomaly Detection', color=text_color, fontsize=12, pad=10)
+    ax.set_ylabel('Count', color=text_color, fontsize=10)
+    
+    # Add count labels on bars
+    for i, count in enumerate(anomaly_counts):
+        ax.text(i, count + max(anomaly_counts)*0.02, str(count), 
+                ha='center', va='bottom', color=text_color, fontsize=11, fontweight='bold')
 
     plt.tight_layout()
     return fig
@@ -715,70 +752,110 @@ with gr.Blocks(title="GalactiMecha: Mars Navigation AI", theme=gr.themes.Soft())
                 return fig
 
             def create_attack_timeline(baseline, attacked, attack_start, attack_end):
-                """Create attack timeline visualization."""
+                """Create attack timeline visualization with Interstellar theme."""
                 steps = attacked['steps']
                 anomalies = attacked['anomalies']
                 attack_active = attacked['attack_active']
 
-                fig, axes = plt.subplots(3, 1, figsize=(12, 8))
-                fig.suptitle('Attack Timeline and AI Response')
+                # Interstellar dark theme colors
+                bg_color = '#0a0e27'
+                text_color = '#e8f4f8'
+                cyan_color = '#64b5f6'
+                grid_color = '#1a2645'
+                
+                fig, axes = plt.subplots(3, 1, figsize=(14, 10))
+                fig.patch.set_facecolor(bg_color)
+                fig.suptitle('Attack Timeline and AI Response', color=text_color, fontsize=16, fontweight='bold', y=0.995)
+
+                for ax in axes:
+                    ax.set_facecolor(bg_color)
+                    ax.spines['bottom'].set_color(cyan_color)
+                    ax.spines['top'].set_color(cyan_color)
+                    ax.spines['left'].set_color(cyan_color)
+                    ax.spines['right'].set_color(cyan_color)
+                    ax.tick_params(colors=text_color, labelsize=10)
+                    ax.grid(True, alpha=0.2, color=cyan_color, linestyle='--', linewidth=0.5)
 
                 # Attack period
-                axes[0].fill_between(steps, 0, 1, where=attack_active, color='red', alpha=0.3, label='Attack Active')
-                axes[0].set_title('Attack Period')
+                axes[0].fill_between(steps, 0, 1, where=attack_active, color='#ff4444', alpha=0.5, label='Attack Active')
+                axes[0].set_title('Attack Period', color=text_color, fontsize=12, pad=10)
                 axes[0].set_yticks([0, 1])
-                axes[0].set_yticklabels(['Inactive', 'Active'])
-                axes[0].legend()
+                axes[0].set_yticklabels(['Inactive', 'Active'], color=text_color)
+                axes[0].legend(facecolor=bg_color, edgecolor=cyan_color, labelcolor=text_color, framealpha=0.9)
 
                 # Anomaly detection
-                axes[1].plot(steps, [1 if a else 0 for a in anomalies], color='red', drawstyle='steps-post', linewidth=2)
-                axes[1].fill_between(steps, 0, [1 if a else 0 for a in anomalies], color='red', alpha=0.3)
-                axes[1].set_title('Anomaly Detection Alerts')
+                axes[1].plot(steps, [1 if a else 0 for a in anomalies], color='#ff4444', drawstyle='steps-post', linewidth=2.5)
+                axes[1].fill_between(steps, 0, [1 if a else 0 for a in anomalies], color='#ff4444', alpha=0.4)
+                axes[1].set_title('Anomaly Detection Alerts', color=text_color, fontsize=12, pad=10)
                 axes[1].set_yticks([0, 1])
-                axes[1].set_yticklabels(['Normal', 'ALERT'])
+                axes[1].set_yticklabels(['Normal', 'ALERT'], color=text_color)
 
                 # Trajectory deviation
                 baseline_pos = np.array(baseline['positions'])
                 attacked_pos = np.array(attacked['positions'])
                 deviation = np.linalg.norm(attacked_pos - baseline_pos, axis=1)
 
-                axes[2].plot(steps, deviation, color='orange', linewidth=2, label='Trajectory Deviation')
-                axes[2].fill_between(steps, 0, deviation, color='orange', alpha=0.3)
-                axes[2].axvspan(attack_start, attack_end, color='red', alpha=0.1, label='Attack Period')
-                axes[2].set_title('Trajectory Deviation from Normal (km)')
-                axes[2].set_ylabel('Deviation (km)')
-                axes[2].legend()
+                axes[2].plot(steps, deviation, color='#ffa500', linewidth=2.5, label='Trajectory Deviation')
+                axes[2].fill_between(steps, 0, deviation, color='#ffa500', alpha=0.3, label='Attack Period')
+                axes[2].axvspan(attack_start, attack_end, color='#ff4444', alpha=0.15)
+                axes[2].set_title('Trajectory Deviation from Normal (km)', color=text_color, fontsize=12, pad=10)
+                axes[2].set_ylabel('Deviation (km)', color=text_color, fontsize=11)
+                axes[2].set_xlabel('Time Step', color=text_color, fontsize=11)
+                axes[2].legend(facecolor=bg_color, edgecolor=cyan_color, labelcolor=text_color, framealpha=0.9)
 
                 plt.tight_layout()
                 return fig
 
             def create_attack_impact_analysis(baseline, attacked, attack_start, attack_end):
-                """Analyze the impact of attacks on sensor data."""
+                """Analyze the impact of attacks on sensor data with Interstellar theme."""
                 baseline_sensors = np.array(baseline['sensor_data'])
                 attacked_sensors = np.array(attacked['sensor_data'])
 
                 steps = attacked['steps']
                 attack_active = attacked['attack_active']
 
-                fig, axes = plt.subplots(2, 3, figsize=(15, 8))
-                fig.suptitle('Sensor Data: Normal vs Under Attack')
+                # Interstellar dark theme colors
+                bg_color = '#0a0e27'
+                text_color = '#e8f4f8'
+                cyan_color = '#64b5f6'
+                blue_color = '#2196f3'
+                red_color = '#ff4444'
+
+                fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+                fig.patch.set_facecolor(bg_color)
+                fig.suptitle('Sensor Data: Normal vs Under Attack', color=text_color, fontsize=16, fontweight='bold', y=0.995)
 
                 sensor_names = ['Position X', 'Velocity X', 'Fuel Level', 'Asteroid Dist', 'Hazard Score']
                 sensor_indices = [0, 3, 7, 8, 9]  # Corresponding column indices
 
                 for i, (name, idx) in enumerate(zip(sensor_names, sensor_indices)):
                     ax = axes[i // 3, i % 3]
-                    ax.plot(steps, baseline_sensors[:, idx], label='Normal', color='blue', linewidth=2)
-                    ax.plot(steps, attacked_sensors[:, idx], label='Under Attack', color='red', linewidth=2, linestyle='--')
+                    
+                    # Set dark theme
+                    ax.set_facecolor(bg_color)
+                    ax.spines['bottom'].set_color(cyan_color)
+                    ax.spines['top'].set_color(cyan_color)
+                    ax.spines['left'].set_color(cyan_color)
+                    ax.spines['right'].set_color(cyan_color)
+                    ax.tick_params(colors=text_color, labelsize=9)
+                    ax.grid(True, alpha=0.2, color=cyan_color, linestyle='--', linewidth=0.5)
+                    
+                    # Plot data
+                    ax.plot(steps, baseline_sensors[:, idx], label='Normal', color=blue_color, linewidth=2.5, alpha=0.9)
+                    ax.plot(steps, attacked_sensors[:, idx], label='Under Attack', color=red_color, linewidth=2.5, linestyle='--', alpha=0.9)
 
                     # Highlight attack period
                     attack_mask = attack_active
                     ax.fill_between(steps, baseline_sensors[:, idx], attacked_sensors[:, idx],
-                                  where=attack_mask, color='red', alpha=0.2, label='Attack Deviation')
+                                  where=attack_mask, color=red_color, alpha=0.25, label='Attack Deviation')
 
-                    ax.set_title(f'{name} Comparison')
-                    ax.legend()
-                    ax.grid(True, alpha=0.3)
+                    ax.set_title(f'{name} Comparison', color=text_color, fontsize=11, pad=8)
+                    ax.set_xlabel('Time Step', color=text_color, fontsize=9)
+                    ax.legend(facecolor=bg_color, edgecolor=cyan_color, labelcolor=text_color, 
+                             framealpha=0.9, fontsize=8, loc='best')
+
+                # Hide the 6th subplot (we only have 5 sensors)
+                axes[1, 2].axis('off')
 
                 plt.tight_layout()
                 return fig
