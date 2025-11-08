@@ -1,0 +1,25 @@
+# Python
+env/
+venv/
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+
+# Node
+node_modules/
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Others
+.env
