@@ -1,2 +1,9 @@
 fastapi
 uvicorn
+numpy
+pandas
+torch
+transformers
+scikit-learn
+matplotlib
+gradio

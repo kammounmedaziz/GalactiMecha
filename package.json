@@ -1,0 +1,21 @@
+{
+  "name": "galactimecha",
+  "version": "1.0.0",
+  "description": "GalactiMecha: Armored AI for interstellar challenges",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kammounmedaziz/GalactiMecha.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/kammounmedaziz/GalactiMecha/issues"
+  },
+  "homepage": "https://github.com/kammounmedaziz/GalactiMecha#readme"
+}
