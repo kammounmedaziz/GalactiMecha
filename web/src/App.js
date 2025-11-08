@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
 
 export default function App() {
-  return (
-    <div style={{padding:20,fontFamily:'Arial, sans-serif'}}>
-      <h1>GalactiMecha</h1>
-      <p>Armored AI for interstellar challenges — frontend scaffold.</p>
-    </div>
-  );
+  const [user, setUser] = useState(null);
+
+  const onLogin = (data) => {
+    setUser(data.user);
+  };
+
+  const onLogout = () => {
+    setUser(null);
+  };
+
+  const token = localStorage.getItem('token');
+  if (!token || !user) return <Login onLogin={onLogin} />;
+
+  return <Dashboard onLogout={onLogout} />;
 }

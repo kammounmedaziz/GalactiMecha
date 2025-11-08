@@ -1,0 +1,14 @@
+{
+  "name": "galactimecha-root",
+  "private": true,
+  "workspaces": ["web"],
+  "scripts": {
+    "web:dev": "npm run dev --prefix web",
+    "web:start": "npm start --prefix web",
+    "web:build": "npm run build --prefix web",
+    "api:logs": "docker compose logs -f api",
+    "compose:up": "docker compose up -d",
+    "compose:up:rebuild": "docker compose up --build -d",
+    "compose:down": "docker compose down"
+  }
+}

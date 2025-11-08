@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:6.0
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/galactimecha
+      - MONGO_RETRY_MS=2000
+      # FACEAUTH_HOST is disabled while the faceauth image build is being fixed
+      # - FACEAUTH_HOST=http://faceauth:5000
+    ports:
+      - "8000:8000"
+    # For production builds we don't mount the host api folder into the container
+    # because it hides the image's installed node_modules. During local development
+    # you can uncomment the volume and run `npm install` on the host.
+    # volumes:
+    #   - ./api:/usr/src/app
+
+  # faceauth service temporarily disabled (heavy native deps cause long builds/timeouts).
+  # To re-enable: restore the service block below and ensure the Dockerfile installs required
+  # system packages and pip packages reliably, or run the faceauth server locally.
+  # faceauth:
+  #   build:
+  #     context: ./ai/face-auth
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "5000:5000"
+  #   volumes:
+  #     - ./ai/face-auth:/app
+
+volumes:
+  mongo-data:

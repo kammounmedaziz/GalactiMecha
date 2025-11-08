@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "galactimecha-api": "file:.."
+  }
+}
